@@ -6,6 +6,14 @@ connectToMongo();
 const app = express()
 const port = 3000
 
+app.get('/api/v1/login', (req, res) => {
+  res.send('Login Page')
+})
+
+app.get('/api/v1/signup', (req, res) => {
+  res.send('Sign Up Page')
+})
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
