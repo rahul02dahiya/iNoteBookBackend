@@ -1,8 +1,11 @@
 const mongoose = require('mongoose')
-const mongoURI = "mongodb://localhost:27017/?directConnection=true"
+const mongoURI = "mongodb://127.0.0.1:27017/Rkbits"
 
-const connectToMongo = async () => {
-        await mongoose.connect(mongoURI)
-        console.log(`MongoDB Connected`)
+const connectToMongo = () => {
+        mongoose.connect(mongoURI)
+        .then(()=>{
+                console.log("connecteddddd");
+        })       
+        
 }
 module.exports = connectToMongo;
