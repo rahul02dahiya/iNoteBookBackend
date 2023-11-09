@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User')
 const bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
 
 const { body, validationResult } = require('express-validator');
 
@@ -28,6 +29,7 @@ router.post('/createuser', [
             return res.status(400).json({ errors: "Sorry a user is already exist with same email" })
         }
 
+        
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
 
@@ -37,8 +39,17 @@ router.post('/createuser', [
             password: secPass
         })
 
+        const data = {
+            user:{
+                j:user.id
+            }
+        }
 
-        res.json(user)
+        const JWT_SECRET = "I'm sad"
+        const authToken = jwt.sign(data, JWT_SECRET);
+        console.log(authToken)
+
+        res.json({authToken:authToken})
     }
     catch (error) {
         console.log(error.message);
