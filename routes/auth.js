@@ -3,28 +3,45 @@ const router = express.Router();
 const User = require('../models/User')
 const { body, validationResult } = require('express-validator');
 
-// Create a user using POST "/api/auth". Doesn't required authentication
+// Create a user using POST "/api/auth". Doesn't required login
 
-router.post('/',[
-    body("password","enter a valid pass").isLength({min:5}),
-    body("email","enter a valid email").isEmail(),
-    body("name","Enter a valid name").isLength({min:3})
-],(req,res)=>{
+router.post('/createuser', [
+    body("password", "enter a valid pass").isLength({ min: 5 }),
+    body("email", "enter a valid email").isEmail(),
+    body("name", "Enter a valid name").isLength({ min: 3 })
+], async (req, res) => {
 
+
+    // If there are errors return bad request and errors
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors:errors.array()})
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
     }
 
-    User.create({
-        name: req.body.name,
-        email:req.body.email,
-        password:req.body.password        
-    }).then(user => res.json(user))
-    .catch(err=>{console.log(err)
-    res.json({error:"Please enter a unique email"})
-console.log(err.index)
+    // Check weather the user is already exist
+
+    try {
+        let user = await User.findOne({ email: req.body.email });
+        if (user) {
+            console.log(user)
+            return res.status(400).json({ errors: "Sorry a user is already exist with same email" })
+        }
+
+        user = await User.create({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password
+        })
+
+
+        res.json(user)
+    }
+    catch (error) {
+        console.log(error.message);
+        res.status(500).send("SOme error occured")
+    }
+
 })
-})
+
 
 module.exports = router;
