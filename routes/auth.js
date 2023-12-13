@@ -68,8 +68,9 @@ router.post('/login', [
 ],
     async (req, res) => {
         const errors = validationResult(req);
+        let success = false;
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
+            return res.status(400).json({success, errors: errors.array() })
         }
 
         const { email, password } = req.body;
@@ -77,11 +78,11 @@ router.post('/login', [
             let user = await User.findOne({ email })
             // return error if user does not exist
             if (!user) {
-                return res.status(400).json({ "error": "Kindly login with correct credentials" })
+                return res.status(400).json({success, "error": "Kindly login with correct credentials" })
             }
             const comparePass = await bcrypt.compare(password, user.password)
             if (!comparePass) {
-                return res.status(400).json({ "error": "Kindly login with correct credentials" })
+                return res.status(400).json({success, "error": "Kindly login with correct credentials" })
             }
             const payload = {
                 user: {
@@ -90,8 +91,8 @@ router.post('/login', [
             }
             const authToken = jwt.sign(payload, JWT_SECRET);
             console.log(authToken)
-
-            res.json({ authToken: authToken })
+            success = true;
+            res.json({ success , authToken })
 
 
         }
