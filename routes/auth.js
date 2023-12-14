@@ -21,8 +21,9 @@ router.post('/createuser', [
 
     // If there are errors return bad request and errors
     const errors = validationResult(req);
+    let success = false;
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
+        return res.status(400).json({success, errors: errors.array() })
     }
 
     // Check weather the user is already exist
@@ -30,7 +31,7 @@ router.post('/createuser', [
         let user = await User.findOne({ email: req.body.email });
         if (user) {
             // console.log(user)
-            return res.status(400).json({ errors: "Sorry a user is already exist with same email" })
+            return res.status(400).json({success, errors: "Sorry a user is already exist with same email" })
         }
 
 
@@ -51,8 +52,8 @@ router.post('/createuser', [
 
         const authToken = jwt.sign(data, JWT_SECRET);
         console.log(authToken)
-
-        res.json({ authToken: authToken })
+        success = true;
+        res.json({success, authToken: authToken })
     }
     catch (error) {
         console.log(error.message);
